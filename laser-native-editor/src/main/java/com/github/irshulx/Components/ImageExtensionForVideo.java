@@ -124,7 +124,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         HtmlTag tag = HtmlTag.valueOf(element.tagName().toLowerCase());
         if(tag == HtmlTag.div){
             String dataTag = element.attr("data-tag");
-            if (dataTag.equals("img")) {
+            if (dataTag.equals("iframe")) {
                 Element img = element.child(0);
                 Element descTag = element.child(1);
                 String src = img.attr("src");

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.EditText
@@ -28,7 +29,19 @@ private lateinit var editor: Editor
         findViewById<View>(R.id.btnBUt).setOnClickListener {
             //val text = editor.contentAsSerialized
             val text = editor.contentAsHTML
-            Log.i("HTMLTEXT", "onCreate: $text")
+
+            //val htmlForm = Editor(this, null)
+            //val htmlFormat = htmlForm.getContentAsHTML(text)
+          /*  val t = TextUtils.htmlEncode(text)
+            Log.i("TAGGO", "onCreate: $t")
+            editor.render(t)
+            val to = editor.contentAsSerialized
+            Log.i("TAGGG", "onCreate: $to")
+*/
+            Log.i("TAGGG", "onCreate: $text")
+            val intent = Intent(this@MainActivity,MainActivity2::class.java)
+            intent.putExtra("content",text)
+            startActivity(intent)
         }
         findViewById<View>(R.id.actionInsertImage).setOnClickListener { editor.openImagePicker() }
 
