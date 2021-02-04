@@ -35,15 +35,6 @@
                     android:layout_height="wrap_content">
                     <com.github.irshulx.Editor
                         android:layout_width="match_parent"
-                        android:id="@+id/renderer1"
-                        app:render_type="Editor"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:layout_height="330dp"
-                        android:paddingBottom="10dp"
-                        />
-                    <com.github.irshulx.Editor
-                        android:layout_width="match_parent"
                         android:id="@+id/renderer"
                         app:render_type="Renderer"
                         android:paddingLeft="10dp"

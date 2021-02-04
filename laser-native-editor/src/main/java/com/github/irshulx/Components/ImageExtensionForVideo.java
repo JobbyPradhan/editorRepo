@@ -205,6 +205,7 @@ public class ImageExtensionForVideo extends EditorComponent {
             BindEvents1(childLayout,link);
         }else {
             desc.setEnabled(false);
+            //BindEvents1(childLayout,link);
         }
 
         return childLayout;
@@ -266,6 +267,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         if (!TextUtils.isEmpty(desc)) {
             componentsWrapper.getInputExtensions().applyTextSettings(node, text);
         }
+       // BindEvents1(childLayout,desc);
     }
 
     public void loadImage1(String _path, Element node) {
@@ -277,6 +279,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         CustomEditText text = childLayout.findViewById(R.id.desc1);
         if(node != null) {
             componentsWrapper.getInputExtensions().applyStyles(text, node);
+            BindEvents1(childLayout,desc);
         }
     }
 
