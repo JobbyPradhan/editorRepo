@@ -6,11 +6,6 @@
     android:paddingBottom="10dp"
     android:paddingTop="10dp">
 
-   <com.google.android.youtube.player.YouTubePlayerView
-       android:id="@+id/playerView"
-       android:background="#fff"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"/>
     <ImageButton
         android:id="@+id/btn_VideoRemove"
         android:layout_width="40dp"
