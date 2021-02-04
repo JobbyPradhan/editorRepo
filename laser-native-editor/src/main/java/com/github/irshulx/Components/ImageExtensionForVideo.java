@@ -87,6 +87,7 @@ public class ImageExtensionForVideo extends EditorComponent {
              * for subtitle
              */
             EditText textView =  view.findViewById(R.id.desc1);
+            textView.setEnabled(false);
             Node subTitleNode = getNodeInstance(textView);
             EditorControl descTag = (EditorControl) textView.getTag();
             subTitleNode.contentStyles = descTag.editorTextStyles;
@@ -115,7 +116,7 @@ public class ImageExtensionForVideo extends EditorComponent {
             loadImage1(path, node.childs.get(0));
         }else{
             View layout = insertImage1(null,path,editorCore.getChildCount(),node.childs.get(0).content.get(0), false);
-            componentsWrapper. getInputExtensions().applyTextSettings(node.childs.get(0), (TextView) layout.findViewById(R.id.desc1));
+            componentsWrapper.getInputExtensions().applyTextSettings(node.childs.get(0), (TextView) layout.findViewById(R.id.desc1));
         }
     }
 
@@ -165,6 +166,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         ImageView imPlay = childLayout.findViewById(R.id.ivPlay);
         final CustomEditText desc = childLayout.findViewById(R.id.desc1);
         desc.setText(link);
+        desc.setEnabled(false);
         if(!TextUtils.isEmpty(url)){
             loadImageUsingLib1(url, imageView);
         }else {
@@ -186,6 +188,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         desc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
+                desc.setEnabled(false);
                 if (!hasFocus) {
                     desc.clearFocus();
                 } else {
@@ -200,13 +203,14 @@ public class ImageExtensionForVideo extends EditorComponent {
         if (editorCore.isLastRow(childLayout) && appendTextline) {
             componentsWrapper.getInputExtensions().insertEditText(index + 1, null, null);
         }
+        desc.setEnabled(false);
         if(editorCore.getRenderType() == RenderType.Editor) {
             Log.i("TAGGGO", "insertImage2: ");
             BindEvents1(childLayout,link);
         }else {
             //BindEvents1(childLayout,link);
         }
-        desc.setEnabled(false);
+
 
         return childLayout;
     }
@@ -218,6 +222,7 @@ public class ImageExtensionForVideo extends EditorComponent {
             return;
         TextView tv = (TextView) view;
         tv.setHint(editorCore.getPlaceHolder());
+        tv.setEnabled(false);
         Linkify.addLinks(tv,Linkify.ALL);
     }
 
@@ -236,6 +241,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         }
         TextView tv = (TextView) view;
         tv.setHint(hint);
+        tv.setEnabled(false);
     }
 
     public String generateUUID() {
@@ -264,6 +270,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         String desc = node.content.get(0);
         final View childLayout = loadImageRemote1(_path, desc);
         CustomEditText text = childLayout.findViewById(R.id.desc1);
+        text.setEnabled(false);
         if (!TextUtils.isEmpty(desc)) {
             componentsWrapper.getInputExtensions().applyTextSettings(node, text);
         }
@@ -277,6 +284,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         }
         final View childLayout = loadImageRemote1(_path, desc);
         CustomEditText text = childLayout.findViewById(R.id.desc1);
+        text.setEnabled(false);
         if(node != null) {
             componentsWrapper.getInputExtensions().applyStyles(text, node);
             BindEvents1(childLayout,desc);
@@ -287,6 +295,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         final View childLayout = ((Activity) editorCore.getContext()).getLayoutInflater().inflate(this.editorImageLayout, null);
         ImageView imageView = childLayout.findViewById(R.id.imageView1);
         CustomEditText text = childLayout.findViewById(R.id.desc1);
+        text.setEnabled(false);
 
         childLayout.setTag(createImageTag(_path));
         text.setTag(createSubTitleTag());
@@ -363,6 +372,8 @@ public class ImageExtensionForVideo extends EditorComponent {
         final ImageView imageView = layout.findViewById(R.id.imageView1);
         final View btn_remove = layout.findViewById(R.id.btn_remove1);
         final ImageView imgPlay = layout.findViewById(R.id.ivPlay);
+        final CustomEditText editText = layout.findViewById(R.id.desc1);
+        editText.setEnabled(false);
 
         btn_remove.setOnClickListener(v -> {
             int index = editorCore.getParentView().indexOfChild(layout);
@@ -400,6 +411,7 @@ public class ImageExtensionForVideo extends EditorComponent {
         imageView.setOnClickListener(v -> {
             if(editorCore.getRenderType() != RenderType.Editor) {
                 btn_remove.setVisibility(View.GONE);
+                editText.setEnabled(false);
             }else {
                 //Toast.makeText(editorCore.getContext(), "James", Toast.LENGTH_LONG).show();
                 btn_remove.setVisibility(View.VISIBLE);
