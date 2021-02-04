@@ -7,6 +7,7 @@ public enum EditorType{
     UL_LI,
     OL_LI,
     img,
+    iframe,
     IMG_SUB,
     INPUT,
     map,

@@ -28,6 +28,7 @@ import com.github.irshulx.Components.ComponentsWrapper;
 import com.github.irshulx.Components.CustomEditText;
 import com.github.irshulx.Components.DividerExtensions;
 import com.github.irshulx.Components.HTMLExtensions;
+import com.github.irshulx.Components.ImageExtensionForVideo;
 import com.github.irshulx.Components.ImageExtensions;
 import com.github.irshulx.Components.InputExtensions;
 import com.github.irshulx.Components.ListItemExtensions;
@@ -59,10 +60,12 @@ import java.util.regex.Pattern;
 public class EditorCore extends LinearLayout implements View.OnTouchListener {
     public static final String TAG = "EDITOR";
     private EditorListener listener;
+    private WatchListener watchListener;
     private final int MAP_MARKER_REQUEST = 20;
     public final int PICK_IMAGE_REQUEST = 1;
     private InputExtensions inputExtensions;
     private ImageExtensions imageExtensions;
+    private ImageExtensionForVideo imageExtensionForVideo;
     private ListItemExtensions listItemExtensions;
     private DividerExtensions dividerExtensions;
     private HTMLExtensions htmlExtensions;
@@ -81,7 +84,7 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
     }
 
     private void onPostInit() {
-        if(getRenderType() == RenderType.Editor) {
+        if (getRenderType() == RenderType.Editor) {
             setOnTouchListener(this);
         }
     }
@@ -90,20 +93,23 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
         loadStateFromAttrs(attrs);
         inputExtensions = new InputExtensions(this);
         imageExtensions = new ImageExtensions(this);
+        imageExtensionForVideo = new ImageExtensionForVideo(this);
         listItemExtensions = new ListItemExtensions(this);
         dividerExtensions = new DividerExtensions(this);
         mapExtensions = new MapExtensions(this);
         htmlExtensions = new HTMLExtensions(this);
         macroExtensions = new MacroExtensions(this);
-        componentsWrapper =new ComponentsWrapper.Builder()
+        componentsWrapper = new ComponentsWrapper.Builder()
                 .inputExtensions(inputExtensions)
                 .htmlExtensions(htmlExtensions)
                 .dividerExtensions(dividerExtensions)
                 .imageExtensions(imageExtensions)
+                .imageExtensionsForVideo(imageExtensionForVideo)
                 .listItemExtensions(listItemExtensions)
                 .macroExtensions(macroExtensions)
                 .mapExtensions(mapExtensions)
                 .build();
+        imageExtensionForVideo.init(componentsWrapper);
         macroExtensions.init(componentsWrapper);
         dividerExtensions.init(componentsWrapper);
         inputExtensions.init(componentsWrapper);
@@ -113,27 +119,27 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
     }
 
 
-    public void ___onViewTouched(int hotspot, int viewPosition){
-        if(hotspot == 0){
-            if(!inputExtensions.isInputTextAtPosition(viewPosition-1)) {
+    public void ___onViewTouched(int hotspot, int viewPosition) {
+        if (hotspot == 0) {
+            if (!inputExtensions.isInputTextAtPosition(viewPosition - 1)) {
                 inputExtensions.insertEditText(viewPosition, null, null);
-            }else{
+            } else {
                 Log.d(TAG, "not adding another edittext since already an edittext on the top");
             }
-        }else if(hotspot ==1){
-            if(!inputExtensions.isInputTextAtPosition(viewPosition+1)) {
+        } else if (hotspot == 1) {
+            if (!inputExtensions.isInputTextAtPosition(viewPosition + 1)) {
                 inputExtensions.insertEditText(viewPosition + 1, null, null);
-            }else{
+            } else {
                 Log.d(TAG, "not adding another edittext since already an edittext below");
             }
         }
     }
 
-    public void ___onViewTouched(View view, MotionEvent motionEvent){
+    public void ___onViewTouched(View view, MotionEvent motionEvent) {
         int position = -1;
-        for(int i = 0; i< getChildCount() ; i++){
+        for (int i = 0; i < getChildCount(); i++) {
             boolean withinBound = isViewInBounds(getChildAt(i), motionEvent.getX(), motionEvent.getY());
-            if(withinBound){
+            if (withinBound) {
                 position = i;
             }
         }
@@ -168,25 +174,24 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
 //
 //        }
 
-        if(position == -1){
-             boolean doInsert = true;
-             if(getControlType(getChildAt(getChildCount() - 1)) == EditorType.INPUT){
-                 CustomEditText editText = (CustomEditText) getChildAt(getChildCount() - 1);
-                 if(TextUtils.isEmpty(editText.getText())){
-                     doInsert = false;
-                 }
-             }
-             if(doInsert)
+        if (position == -1) {
+            boolean doInsert = true;
+            if (getControlType(getChildAt(getChildCount() - 1)) == EditorType.INPUT) {
+                CustomEditText editText = (CustomEditText) getChildAt(getChildCount() - 1);
+                if (TextUtils.isEmpty(editText.getText())) {
+                    doInsert = false;
+                }
+            }
+            if (doInsert)
                 inputExtensions.insertEditText(getChildCount(), null, null);
         }
     }
 
-    private boolean isViewInBounds(View view, float x, float y){
+    private boolean isViewInBounds(View view, float x, float y) {
 
         Rect outRect = new Rect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
 
-        if(outRect.contains((int)x, (int)y))
-        {
+        if (outRect.contains((int) x, (int) y)) {
             return true;
         }
         return false;
@@ -264,6 +269,14 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
         return this.listener;
     }
 
+    public WatchListener getWatchListener() {
+        return this.watchListener;
+    }
+
+    public void setWatchListener(WatchListener _listener) {
+        this.watchListener = _listener;
+    }
+
     public void setEditorListener(EditorListener _listener) {
         this.listener = _listener;
     }
@@ -281,6 +294,10 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
         return this.imageExtensions;
     }
 
+    protected ImageExtensionForVideo getImageExtensionsForVideo() {
+        return this.imageExtensionForVideo;
+    }
+
     protected MapExtensions getMapExtensions() {
         return this.mapExtensions;
     }
@@ -296,14 +313,15 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
     protected DividerExtensions getDividerExtensions() {
         return this.dividerExtensions;
     }
+
     protected MacroExtensions getMacroExtensions() {
         return macroExtensions;
     }
-/*
- *
- *
- *
- */
+    /*
+     *
+     *
+     *
+     */
 
     //endregion
 
@@ -334,11 +352,11 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
     protected EditorContent getContent() {
 
         if (this.editorSettings.renderType == RenderType.Renderer) {
-            Utilities.toastItOut(this.getContext(),"This option only available in editor mode");
+            Utilities.toastItOut(this.getContext(), "This option only available in editor mode");
             return null;
         }
 
-        int childCount =this.editorSettings.parentView.getChildCount();
+        int childCount = this.editorSettings.parentView.getChildCount();
         EditorContent editorState = new EditorContent();
         List<Node> list = new ArrayList<>();
         for (int i = 0; i < childCount; i++) {
@@ -350,9 +368,15 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
                     list.add(node);
                     break;
                 case img:
+                   /* node = getImageExtensionsForVideo().getContent(view);
+                    list.add(node);*/
                     node = getImageExtensions().getContent(view);
                     list.add(node);
                     //field type, content[]
+                    break;
+                case iframe:
+                    node = getImageExtensionsForVideo().getContent(view);
+                    list.add(node);
                     break;
                 case hr:
                     node = getDividerExtensions().getContent(view);
@@ -360,7 +384,7 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
                     break;
                 case ul:
                 case ol:
-                    node =getListItemExtensions().getContent(view);
+                    node = getListItemExtensions().getContent(view);
                     list.add(node);
                     break;
                 case map:
@@ -380,7 +404,7 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
 
     protected void renderEditor(EditorContent _state) {
         this.editorSettings.parentView.removeAllViews();
-        this.editorSettings.serialRenderInProgress  = true;
+        this.editorSettings.serialRenderInProgress = true;
         for (Node item : _state.nodes) {
             switch (item.type) {
                 case INPUT:
@@ -391,6 +415,9 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
                     break;
                 case img:
                     imageExtensions.renderEditorFromState(item, _state);
+                    break;
+                case iframe:
+                    imageExtensionForVideo.renderEditorFromState(item, _state);
                     break;
                 case ul:
                 case ol:
@@ -410,9 +437,9 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
     protected void parseHtml(String htmlString) {
         Document doc = Jsoup.parse(htmlString);
         for (Element element : doc.body().children()) {
-            if (!HTMLExtensions.matchesTag(element.tagName().toLowerCase())){
+            if (!HTMLExtensions.matchesTag(element.tagName().toLowerCase())) {
                 String tag = element.attr("data-tag");
-                if(!tag.equals("macro")){
+                if (!tag.equals("macro")) {
                     continue;
                 }
             }
@@ -424,7 +451,7 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
         String text;
 
         String macroTag = element.attr("data-tag");
-        if(macroTag.equals("macro")){
+        if (macroTag.equals("macro")) {
             macroExtensions.buildNodeFromHTML(element);
             return;
         }
@@ -432,7 +459,7 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
         HtmlTag tag = HtmlTag.valueOf(element.tagName().toLowerCase());
         int count = getParentView().getChildCount();
 
-        if ("br".equals(tag.name()) ||"<br>".equals(element.html().replaceAll("\\s+", "")) || "<br/>".equals(element.html().replaceAll("\\s+", ""))) {
+        if ("br".equals(tag.name()) || "<br>".equals(element.html().replaceAll("\\s+", "")) || "<br/>".equals(element.html().replaceAll("\\s+", ""))) {
             inputExtensions.insertEditText(count, null, null);
             return;
         } else if ("hr".equals(tag.name()) || "<hr>".equals(element.html().replaceAll("\\s+", "")) || "<hr/>".equals(element.html().replaceAll("\\s+", ""))) {
@@ -455,11 +482,17 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
             case img:
                 imageExtensions.buildNodeFromHTML(element);
                 break;
+            case iframe:
+                imageExtensionForVideo.buildNodeFromHTML(element);
+                break;
             case div:
                 String dataTag = element.attr("data-tag");
                 if (dataTag.equals("img")) {
                     imageExtensions.buildNodeFromHTML(element);
-                }else{
+
+                } else if (dataTag.equals("iframe")) {
+                    imageExtensionForVideo.buildNodeFromHTML(element);
+                } else {
                     inputExtensions.buildNodeFromHTML(element);
                 }
                 break;
@@ -485,11 +518,15 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
                     String imgHtml = getImageExtensions().getContentAsHTML(item, content);
                     htmlBlock.append(imgHtml);
                     break;
+                case iframe:
+                    String imgHtml1 = getImageExtensionsForVideo().getContentAsHTML(item, content);
+                    htmlBlock.append(imgHtml1);
+                    break;
                 case hr:
                     htmlBlock.append(dividerExtensions.getContentAsHTML(item, content));
                     break;
                 case map:
-                    String htmlMap = mapExtensions.getContentAsHTML(item,content);
+                    String htmlMap = mapExtensions.getContentAsHTML(item, content);
                     htmlBlock.append(htmlMap);
                     break;
                 case ul:
@@ -520,8 +557,6 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
         this.editorSettings.parentView.removeAllViews();
 
     }
-
-
 
 
     private void loadStateFromAttrs(AttributeSet attributeSet) {
@@ -630,6 +665,7 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
         switch (type) {
             case hr:
             case img:
+            case iframe:
             case INPUT:
             case ul:
             case UL_LI:
@@ -642,7 +678,7 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
         if (index == 0)
             return;
         EditorControl contentType = (EditorControl) ((View) view.getParent()).getTag();
-          /*
+        /*
          *
          * If the person was on an active ul|li, move him to the previous node
          *
@@ -668,11 +704,11 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
          */
 
         if (control.Type == EditorType.ol || control.Type == EditorType.ul) {
-         /*
-         *
-         * previous node on the editor is a list, set focus to its inside
-         *
-         */
+            /*
+             *
+             * previous node on the editor is a list, set focus to its inside
+             *
+             */
             this.editorSettings.parentView.removeView(view);
             listItemExtensions.setFocusToList(toFocus, ListItemExtensions.POSITION_END);
         } else {
@@ -732,7 +768,7 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
     }
 
 
-    private Node getNodeInstance(View view){
+    private Node getNodeInstance(View view) {
         Node node = new Node();
         EditorType type = getControlType(view);
         node.type = type;
@@ -741,14 +777,11 @@ public class EditorCore extends LinearLayout implements View.OnTouchListener {
     }
 
 
-
-
     public boolean isLastRow(View view) {
         int index = this.editorSettings.parentView.indexOfChild(view);
         int length = this.editorSettings.parentView.getChildCount();
         return length - 1 == index;
     }
-
 
 
     public boolean onKey(View v, int keyCode, KeyEvent event, CustomEditText editText) {

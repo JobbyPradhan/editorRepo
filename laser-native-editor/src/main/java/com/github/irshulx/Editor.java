@@ -33,8 +33,13 @@ import java.util.Map;
 public class Editor extends EditorCore {
     public Editor(Context context, AttributeSet attrs) {
         super(context, attrs);
+        super.setWatchListener(null);
         super.setEditorListener(null);
         //  initialize(context,parentView,renderType,_PlaceHolderText);
+    }
+
+    public void setWatchListener(WatchListener _listener){
+        super.setWatchListener(_listener);
     }
 
     public void setEditorListener(EditorListener _listener) {
@@ -261,6 +266,10 @@ public class Editor extends EditorCore {
     public void setEditorImageLayout(int layout) {
         this.getImageExtensions().setEditorImageLayout(layout);
     }
+    public void setEditorVideoLayout(int layout){
+        this.getImageExtensionsForVideo().setEditorImageLayout1(layout);
+    }
+
 
     public void openImagePicker() {
         getImageExtensions().openImageGallery();
@@ -270,6 +279,10 @@ public class Editor extends EditorCore {
         getImageExtensions().insertImage(bitmap,null, -1,null, true);
     }
 
+    public void insertImageForVideo(String url,String link){
+        getImageExtensionsForVideo().insertImage1(link,url, -1,null, true);
+    }
+
     public void onImageUploadComplete(String url, String imageId) {
         getImageExtensions().onPostUpload(url, imageId);
     }
@@ -277,6 +290,7 @@ public class Editor extends EditorCore {
     public void onImageUploadFailed(String imageId) {
         getImageExtensions().onPostUpload(null, imageId);
     }
+
     /*
      *
      *List Item extension

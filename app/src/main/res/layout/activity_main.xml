@@ -2,15 +2,16 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_height="match_parent">
-
 
         <!-- Begin Editor toolbar -->
 
@@ -35,6 +36,17 @@
             android:layout_alignParentTop="true"
             android:layout_height="match_parent"
             >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnBUt"
+                    android:text="Render"
+                    />
+
             <com.github.irshulx.Editor
                 android:layout_width="match_parent"
                 android:id="@+id/editor"
@@ -46,6 +58,7 @@
                 android:layout_height="match_parent"
                 android:paddingBottom="100dp">
             </com.github.irshulx.Editor>
+            </LinearLayout>
         </ScrollView>
     </RelativeLayout>
 </LinearLayout>

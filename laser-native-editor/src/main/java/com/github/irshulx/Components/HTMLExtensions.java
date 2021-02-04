@@ -89,6 +89,9 @@ public class HTMLExtensions {
             case img:
                 template = "<div data-tag=\"img\"><img src=\"{{$url}}\" />{{$img-sub}}</div>";
                 break;
+            case iframe:
+                template = "<div data-tag=\"iframe\"><img src=\"{{$url}}\" />{{$img-sub}}</div>";
+                break;
             case IMG_SUB:
                 template = "<{{$tag}} data-tag=\"img-sub\" {{$style}} class=\"editor-image-subtitle\">{{$content}}</{{$tag}}>";
                 break;

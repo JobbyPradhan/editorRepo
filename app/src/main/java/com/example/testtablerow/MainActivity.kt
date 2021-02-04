@@ -6,12 +6,14 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.irshulx.Editor
 import com.github.irshulx.EditorListener
+import com.github.irshulx.WatchListener
 import com.github.irshulx.models.EditorTextStyle
 import java.io.IOException
 
@@ -21,9 +23,23 @@ private lateinit var editor: Editor
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
          editor = findViewById<Editor>(R.id.editor)
+
+
+        findViewById<View>(R.id.btnBUt).setOnClickListener {
+            //val text = editor.contentAsSerialized
+            val text = editor.contentAsHTML
+            Log.i("HTMLTEXT", "onCreate: $text")
+        }
         findViewById<View>(R.id.actionInsertImage).setOnClickListener { editor.openImagePicker() }
 
-        findViewById<View>(R.id.actionInsertLink).setOnClickListener { editor.insertLink() }
+       /* findViewById<View>(R.id.actionInsertLink).setOnClickListener {
+            editor.insertLink()
+        }*/
+        findViewById<View>(R.id.actionInsertLink).setOnClickListener {
+            //https://www.youtube.com/watch?v=8U-zDpwm1Rk
+            editor.insertImageForVideo("https://aws-mhs-bucket.s3-ap-southeast-1.amazonaws.com/auth/images/user-profiles/2928.png",
+            "https://www.youtube.com/watch?v=8U-zDpwm1Rk")
+        }
 
 
         findViewById<View>(R.id.actionErase).setOnClickListener { editor.clearAllContents() }
@@ -35,6 +51,7 @@ private lateinit var editor: Editor
         //editor.setNormalTextSize(10);
         // editor.setEditorTextColor("#FF3333");
         //editor.StartEditor();
+        editor.watchListener = WatchListener { url -> Log.i("TAGGGO", "onWatch: $url") }
         editor.editorListener = object : EditorListener {
             override fun onTextChanged(editText: EditText, text: Editable) {
                 // Toast.makeText(EditorTestActivity.this, text, Toast.LENGTH_SHORT).show();
@@ -161,6 +178,7 @@ private lateinit var editor: Editor
             try {
                 val bitmap = MediaStore.Images.Media.getBitmap(contentResolver,uri)
                 editor.insertImage(bitmap)
+               // editor.insertImageForVideo(bitmap)
             }catch (e : IOException){
                 e.printStackTrace()
             }

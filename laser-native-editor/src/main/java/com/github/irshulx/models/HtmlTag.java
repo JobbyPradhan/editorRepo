@@ -8,6 +8,7 @@ public enum HtmlTag{
     ol,
     br,
     img,
+    iframe,
     hr,
     p,
     div,

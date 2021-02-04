@@ -5,13 +5,15 @@ public class ComponentsWrapper {
     private DividerExtensions dividerExtensions;
     private HTMLExtensions htmlExtensions;
     private ImageExtensions imageExtensions;
+    private ImageExtensionForVideo imageExtensionForVideo;
     private ListItemExtensions listItemExtensions;
     private MapExtensions mapExtensions;
     private MacroExtensions macroExtensions;
 
-    public ComponentsWrapper(InputExtensions inputExtensions, DividerExtensions dividerExtensions, HTMLExtensions htmlExtensions, ImageExtensions imageExtensions, ListItemExtensions listItemExtensions, MapExtensions mapExtensions, MacroExtensions macroExtensions) {
+    public ComponentsWrapper(InputExtensions inputExtensions, DividerExtensions dividerExtensions, HTMLExtensions htmlExtensions, ImageExtensions imageExtensions,ImageExtensionForVideo imageExtensionForVideo, ListItemExtensions listItemExtensions, MapExtensions mapExtensions, MacroExtensions macroExtensions) {
         this.inputExtensions = inputExtensions;
         this.dividerExtensions = dividerExtensions;
+        this.imageExtensionForVideo = imageExtensionForVideo;
         this.htmlExtensions = htmlExtensions;
         this.imageExtensions = imageExtensions;
         this.listItemExtensions = listItemExtensions;
@@ -35,6 +37,10 @@ public class ComponentsWrapper {
         return imageExtensions;
     }
 
+    public ImageExtensionForVideo getImageExtensionForVideo() {
+        return imageExtensionForVideo;
+    }
+
     public ListItemExtensions getListItemExtensions() {
         return listItemExtensions;
     }
@@ -52,6 +58,7 @@ public class ComponentsWrapper {
         private DividerExtensions _dividerExtensions;
         private HTMLExtensions _htmlExtensions;
         private ImageExtensions _imageExtensions;
+        private ImageExtensionForVideo _imageExtensionsForVideo;
         private ListItemExtensions _listItemExtensions;
         private MapExtensions _mapExtensions;
         private MacroExtensions _macroExtensions;
@@ -81,6 +88,11 @@ public class ComponentsWrapper {
             return this;
         }
 
+        public Builder imageExtensionsForVideo(ImageExtensionForVideo imageExtensionForVideo){
+            this._imageExtensionsForVideo = imageExtensionForVideo;
+            return this;
+        }
+
         public Builder macroExtensions(MacroExtensions macroExtensions){
             this._macroExtensions = macroExtensions;
             return this;
@@ -97,6 +109,7 @@ public class ComponentsWrapper {
                     this._dividerExtensions,
                     this._htmlExtensions,
                     this._imageExtensions,
+                    this._imageExtensionsForVideo,
                     this._listItemExtensions,
                     this._mapExtensions,
                     this._macroExtensions);

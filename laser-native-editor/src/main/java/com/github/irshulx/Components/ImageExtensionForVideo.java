@@ -64,9 +64,9 @@ import java.util.UUID;
 /**
  * Created by mkallingal on 5/1/2016.
  */
-public class ImageExtensions extends EditorComponent {
+public class ImageExtensionForVideo extends EditorComponent {
     private EditorCore editorCore;
-    private int editorImageLayout = R.layout.tmpl_image_view;
+    private int editorImageLayout = R.layout.tmpl_image_video;
     public RequestListener<Drawable> requestListener;
     public RequestOptions requestOptions;
     public DrawableTransitionOptions transition;
@@ -86,7 +86,7 @@ public class ImageExtensions extends EditorComponent {
             /**
              * for subtitle
              */
-            EditText textView =  view.findViewById(R.id.desc);
+            EditText textView =  view.findViewById(R.id.desc1);
             Node subTitleNode = getNodeInstance(textView);
             EditorControl descTag = (EditorControl) textView.getTag();
             subTitleNode.contentStyles = descTag.editorTextStyles;
@@ -112,10 +112,10 @@ public class ImageExtensions extends EditorComponent {
     public void renderEditorFromState(Node node, EditorContent content) {
         String path = node.content.get(0);
         if(editorCore.getRenderType() == RenderType.Renderer) {
-            loadImage(path, node.childs.get(0));
+            loadImage1(path, node.childs.get(0));
         }else{
-            View layout = insertImage(null,path,editorCore.getChildCount(),node.childs.get(0).content.get(0), false);
-            componentsWrapper. getInputExtensions().applyTextSettings(node.childs.get(0), (TextView) layout.findViewById(R.id.desc));
+            View layout = insertImage1(null,path,editorCore.getChildCount(),node.childs.get(0).content.get(0), false);
+            componentsWrapper. getInputExtensions().applyTextSettings(node.childs.get(0), (TextView) layout.findViewById(R.id.desc1));
         }
     }
 
@@ -128,15 +128,15 @@ public class ImageExtensions extends EditorComponent {
                 Element img = element.child(0);
                 Element descTag = element.child(1);
                 String src = img.attr("src");
-                loadImage(src, descTag);
+                loadImage1(src, descTag);
             }
         }else {
             String src = element.attr("src");
             if(element.children().size() > 0) {
                 Element descTag = element.child(1);
-                loadImage(src, descTag);
+                loadImage1(src, descTag);
             }else{
-                loadImageRemote(src, null);
+                loadImageRemote1(src, null);
             }
         }
         return null;
@@ -147,37 +147,31 @@ public class ImageExtensions extends EditorComponent {
         this.componentsWrapper = componentsWrapper;
     }
 
-    public ImageExtensions(EditorCore editorCore) {
+    public ImageExtensionForVideo(EditorCore editorCore) {
         super(editorCore);
         this.editorCore = editorCore;
     }
 
-    public void setEditorImageLayout(int drawable) {
+    public void setEditorImageLayout1(int drawable) {
         this.editorImageLayout = drawable;
     }
 
-    public void openImageGallery() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        ((Activity) editorCore.getContext()).startActivityForResult(Intent.createChooser(intent, "Select an image"), editorCore.PICK_IMAGE_REQUEST);
-    }
 
-    public View insertImage(Bitmap image, String url, int index, String subTitle, boolean appendTextline) {
-        boolean hasUploaded = false;
-        if(!TextUtils.isEmpty(url)) hasUploaded = true;
+    public View insertImage1(String link , String url, int index, String subTitle, boolean appendTextline) {
 
         // Render(getStateFromString());
         final View childLayout = ((Activity) editorCore.getContext()).getLayoutInflater().inflate(this.editorImageLayout, null);
-        ImageView imageView =  childLayout.findViewById(R.id.imageView);
-        final TextView lblStatus =  childLayout.findViewById(R.id.lblStatus);
-        final CustomEditText desc = childLayout.findViewById(R.id.desc);
+        ImageView imageView =  childLayout.findViewById(R.id.imageView1);
+        ImageView imPlay = childLayout.findViewById(R.id.ivPlay);
+        final CustomEditText desc = childLayout.findViewById(R.id.desc1);
+        desc.setText(link);
         if(!TextUtils.isEmpty(url)){
-            loadImageUsingLib(url, imageView);
+            loadImageUsingLib1(url, imageView);
         }else {
-            Log.i("TAGGGO", "loadImageRemote: ");
-            Log.i("TAGGGO", "loadImageRemote: "+(editorCore.getRenderType()== RenderType.Editor));
-            imageView.setImageBitmap(image);
+            Glide.with(imageView.getContext())
+                    .load(url)
+                    .error(R.drawable.ic_preview_broken)
+                    .into(imageView);
         }
         final String uuid = generateUUID();
         if (index == -1) {
@@ -185,11 +179,7 @@ public class ImageExtensions extends EditorComponent {
         }
         showNextInputHint(index);
         editorCore.getParentView().addView(childLayout, index);
-
-        //      _Views.add(childLayout);
-
-        // set the imageId,so we can recognize later after upload
-        childLayout.setTag(createImageTag(hasUploaded ? url : uuid));
+        childLayout.setTag(createImageTag(url));
         desc.setTag(createSubTitleTag());
 
 
@@ -204,22 +194,17 @@ public class ImageExtensions extends EditorComponent {
             }
         });
 
+        if(!TextUtils.isEmpty(subTitle))
+            componentsWrapper.getInputExtensions().setText(desc, subTitle);
+
         if (editorCore.isLastRow(childLayout) && appendTextline) {
             componentsWrapper.getInputExtensions().insertEditText(index + 1, null, null);
         }
-        if(!TextUtils.isEmpty(subTitle))
-            componentsWrapper.getInputExtensions().setText(desc, subTitle);
-        if(editorCore.getRenderType()== RenderType.Editor) {
-            Log.i("TAGGGO", "loadImageRemote: ");
-            BindEvents(childLayout);
-            if(!hasUploaded){
-                lblStatus.setVisibility(View.VISIBLE);
-                childLayout.findViewById(R.id.progress).setVisibility(View.VISIBLE);
-                editorCore.getEditorListener().onUpload(image, uuid);
-            }
+        if(editorCore.getRenderType() == RenderType.Editor) {
+            Log.i("TAGGGO", "insertImage2: ");
+            BindEvents1(childLayout,link);
         }else {
             desc.setEnabled(false);
-            lblStatus.setVisibility(View.GONE);
         }
 
         return childLayout;
@@ -228,7 +213,6 @@ public class ImageExtensions extends EditorComponent {
     private void showNextInputHint(int index) {
         View view = editorCore.getParentView().getChildAt(index);
         EditorType type = editorCore.getControlType(view);
-        Log.i("TAGGGO", "showNextInputHint: "+type);
         if (type != EditorType.INPUT)
             return;
         TextView tv = (TextView) view;
@@ -268,40 +252,38 @@ public class ImageExtensions extends EditorComponent {
     }
 
     public EditorControl createImageTag(String path) {
-        EditorControl control = editorCore.createTag(EditorType.img);
+        EditorControl control = editorCore.createTag(EditorType.iframe);
         control.path = path;
         return control;
     }
     /*
       /used by the renderer to render the image from the Node
     */
-    public void loadImage(String _path, Node node) {
+    public void loadImage1(String _path, Node node) {
         String desc = node.content.get(0);
-        Log.i("TAGGGO", "loadImage:"+desc );
-        final View childLayout = loadImageRemote(_path, desc);
-        CustomEditText text = childLayout.findViewById(R.id.desc);
+        final View childLayout = loadImageRemote1(_path, desc);
+        CustomEditText text = childLayout.findViewById(R.id.desc1);
         if (!TextUtils.isEmpty(desc)) {
             componentsWrapper.getInputExtensions().applyTextSettings(node, text);
         }
     }
 
-    public void loadImage(String _path, Element node) {
+    public void loadImage1(String _path, Element node) {
         String desc = null;
         if(node != null) {
             desc = node.html();
         }
-        Log.i("TAGGGO", "loadImage1:"+desc );
-        final View childLayout = loadImageRemote(_path, desc);
-        CustomEditText text = childLayout.findViewById(R.id.desc);
+        final View childLayout = loadImageRemote1(_path, desc);
+        CustomEditText text = childLayout.findViewById(R.id.desc1);
         if(node != null) {
             componentsWrapper.getInputExtensions().applyStyles(text, node);
         }
     }
 
-    public View loadImageRemote(String _path, String desc){
+    public View loadImageRemote1(String _path, String desc){
         final View childLayout = ((Activity) editorCore.getContext()).getLayoutInflater().inflate(this.editorImageLayout, null);
-        ImageView imageView = childLayout.findViewById(R.id.imageView);
-        CustomEditText text = childLayout.findViewById(R.id.desc);
+        ImageView imageView = childLayout.findViewById(R.id.imageView1);
+        CustomEditText text = childLayout.findViewById(R.id.desc1);
 
         childLayout.setTag(createImageTag(_path));
         text.setTag(createSubTitleTag());
@@ -309,19 +291,18 @@ public class ImageExtensions extends EditorComponent {
             componentsWrapper.getInputExtensions().setText(text, desc);
         }
         text.setEnabled(editorCore.getRenderType() == RenderType.Editor);
-        loadImageUsingLib(_path, imageView);
+        loadImageUsingLib1(_path, imageView);
         editorCore.getParentView().addView(childLayout);
 
         if(editorCore.getRenderType()== RenderType.Editor) {
-            Log.i("TAGGGO", "loadImageRemote: ");
-            BindEvents(childLayout);
+            BindEvents1(childLayout,desc);
         }
 
         return childLayout;
     }
 
 
-    public void loadImageUsingLib(String path, ImageView imageView){
+    public void loadImageUsingLib1(String path, ImageView imageView){
         if(requestListener == null){
             requestListener = new RequestListener<Drawable>() {
                 @Override
@@ -335,7 +316,6 @@ public class ImageExtensions extends EditorComponent {
                 }
             };
         }
-
 
         if(placeholder == -1){
             placeholder = R.drawable.image_placeholder;
@@ -358,16 +338,12 @@ public class ImageExtensions extends EditorComponent {
         //import com.github.irshulx.GlideApp;
         Glide.with(imageView.getContext())
                 .load(path)
-                .transition(transition)
-                .fitCenter()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)   //No disk cache
-                .listener(requestListener)
-                .apply(requestOptions)
+                .error(R.drawable.ic_preview_broken)
                 .into(imageView);
     }
 
 
-    public View findImageById(String imageId) {
+    public View findImageById1(String imageId) {
         for (int i = 0; i < editorCore.getParentChildCount(); i++) {
             View view = editorCore.getParentView().getChildAt(i);
             EditorControl control = editorCore.getControlTag(view);
@@ -377,45 +353,19 @@ public class ImageExtensions extends EditorComponent {
         return null;
     }
 
-    public void onPostUpload(String url, String imageId) {
-        View view = findImageById(imageId);
-        final TextView lblStatus = (TextView) view.findViewById(R.id.lblStatus);
-        lblStatus.setText(!TextUtils.isEmpty(url) ? "Upload complete" : "Upload failed");
-        if (!TextUtils.isEmpty(url)) {
-            EditorControl control = editorCore.createTag(EditorType.img);
-            control.path = url;
-            view.setTag(control);
-            TimerTask timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    ((Activity) editorCore.getContext()).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // This code will always run on th UI thread, therefore is safe to modify UI elements.
-                            lblStatus.setVisibility(View.GONE);
-                        }
-                    });
-                }
-            };
-            new java.util.Timer().schedule(timerTask, 3000);
-        }
-        view.findViewById(R.id.progress).setVisibility(View.GONE);
-    }
 
 
 
-    private void BindEvents(final View layout) {
-        final ImageView imageView = layout.findViewById(R.id.imageView);
-        final View btn_remove = layout.findViewById(R.id.btn_remove);
+    private void BindEvents1(final View layout,final String link) {
+        final ImageView imageView = layout.findViewById(R.id.imageView1);
+        final View btn_remove = layout.findViewById(R.id.btn_remove1);
+        final ImageView imgPlay = layout.findViewById(R.id.ivPlay);
 
-        btn_remove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int index = editorCore.getParentView().indexOfChild(layout);
-                editorCore.getParentView().removeView(layout);
-                hideInputHint(index);
-                componentsWrapper.getInputExtensions().setFocusToPrevious(index);
-            }
+        btn_remove.setOnClickListener(v -> {
+            int index = editorCore.getParentView().indexOfChild(layout);
+            editorCore.getParentView().removeView(layout);
+            hideInputHint(index);
+            componentsWrapper.getInputExtensions().setFocusToPrevious(index);
         });
 
         layout.setOnTouchListener(new View.OnTouchListener() {
@@ -440,18 +390,14 @@ public class ImageExtensions extends EditorComponent {
             }
         });
 
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText((Activity) editorCore.getContext(), "James", Toast.LENGTH_SHORT).show();
-                btn_remove.setVisibility(View.VISIBLE);
-            }
+        imgPlay.setOnClickListener(v->{
+                editorCore.getWatchListener().onWatch(link);
         });
-        imageView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                btn_remove.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
-            }
+
+        imageView.setOnClickListener(v -> {
+          //Toast.makeText(editorCore.getContext(), "James", Toast.LENGTH_LONG).show();
+            btn_remove.setVisibility(View.VISIBLE);
         });
+        imageView.setOnFocusChangeListener((v, hasFocus) -> btn_remove.setVisibility(hasFocus ? View.VISIBLE : View.GONE));
     }
 }
