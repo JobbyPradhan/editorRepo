@@ -204,9 +204,9 @@ public class ImageExtensionForVideo extends EditorComponent {
             Log.i("TAGGGO", "insertImage2: ");
             BindEvents1(childLayout,link);
         }else {
-            desc.setEnabled(false);
             //BindEvents1(childLayout,link);
         }
+        desc.setEnabled(false);
 
         return childLayout;
     }
@@ -398,8 +398,12 @@ public class ImageExtensionForVideo extends EditorComponent {
         });
 
         imageView.setOnClickListener(v -> {
-          //Toast.makeText(editorCore.getContext(), "James", Toast.LENGTH_LONG).show();
-            btn_remove.setVisibility(View.VISIBLE);
+            if(editorCore.getRenderType() != RenderType.Editor) {
+                btn_remove.setVisibility(View.GONE);
+            }else {
+                //Toast.makeText(editorCore.getContext(), "James", Toast.LENGTH_LONG).show();
+                btn_remove.setVisibility(View.VISIBLE);
+            }
         });
         imageView.setOnFocusChangeListener((v, hasFocus) -> btn_remove.setVisibility(hasFocus ? View.VISIBLE : View.GONE));
     }

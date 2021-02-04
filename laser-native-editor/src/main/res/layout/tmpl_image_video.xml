@@ -26,6 +26,7 @@
         android:layout_below="@+id/imageView1"
         android:layout_marginTop="3dp"
         android:inputType="none"
+        android:enabled="false"
         android:background="@android:color/transparent"
         android:hint="Description here (optional)"
         android:paddingLeft="10dp"
