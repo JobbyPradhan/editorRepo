@@ -443,7 +443,7 @@ public class ImageExtensions extends EditorComponent {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText((Activity) editorCore.getContext(), "James", Toast.LENGTH_SHORT).show();
+               // Toast.makeText((Activity) editorCore.getContext(), "James", Toast.LENGTH_SHORT).show();
                 btn_remove.setVisibility(View.VISIBLE);
             }
         });
